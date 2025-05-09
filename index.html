@@ -1,27 +1,185 @@
-<label>Token to Trade:</label>
-<select id="tokenDropdown" onchange="setTokenAddress()">
-  <option value="">-- Select a Token --</option>
-  <option value="0xe0b22e0037b130a9f56bbb537684e6fa18192341">AAVE</option>
-  <option value="0x9a71012b13ca4d3d0cdc72a177df3ef03b0e76a3">BAL</option>
-  <option value="0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063">DAI</option>
-  <option value="0x172370d5cd63279efa6d502dab29171933a610af">CRV</option>
-  <option value="0x5559EDb74751a0e293593F6D522B6993D96eF9Fa">CLAM</option>
-  <option value="0xcEd45a4d2Dcd9133dC183B58F7f4B0e1C839c752">GNS</option>
-  <option value="0x5979D7b546E38E414F7E9822514be443A4800529">LIDO</option>
-  <option value="0x85955046df4668e1dd369d2de9f3aeb98dd2a369">BIFI</option>
-  <option value="0x9c9e5fD8bbc25984B178FdCE6117Defa39d2db39">BUSD</option>
-  <option value="0x1729b68f77f2d6f208d3958adfc7e2f001f3ed5c">SAND</option>
-  <option value="0x7c9f4C87d911613Fe9ca58b579f737911AAD2D43">USDP</option>
-  <option value="0xb33EaAd8d922B1083446DC23f610c2567fB5180f">UNI</option>
-  <option value="0x3066818837c5e6ed6601bd5a91b0762877a6b731">UMA</option>
-  <option value="0xe7f58A92476056627f9Fdb92286778abaF6a4f6b">WOO</option>
-  <option value="0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270">WMATIC</option>
-  <option value="0x1BFD67037B42Cf73acF2047067bd4F2C47D9BfD6">WBTC</option>
-  <option value="0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619">WETH</option>
-</select>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Polygon Arbitrage DApp</title>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js"></script>
+  <style>
+    body {
+      background-color: #0d1b2a;
+      color: #ffffff;
+      font-family: Arial, sans-serif;
+    }
+    .container {
+      max-width: 900px;
+      margin: auto;
+      padding: 20px;
+    }
+    h1, h2 {
+      text-align: center;
+    }
+    .card {
+      background-color: #1b263b;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+    }
+    input, select {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      margin-bottom: 15px;
+      border-radius: 6px;
+      border: none;
+      font-size: 16px;
+    }
+    button {
+      padding: 10px 20px;
+      margin-right: 10px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      background-color: #0077b6;
+      color: white;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+    th, td {
+      border: 1px solid #555;
+      padding: 8px;
+      text-align: center;
+    }
+    th {
+      background-color: #274c77;
+    }
+    .highlight {
+      background-color: #90be6d;
+      color: black;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Polygon Arbitrage Trading DApp</h1>
+    <div class="card">
+      <button onclick="connectWallet()">Connect Wallet</button>
+      <p>Connected Address: <span id="walletAddress">Not connected</span></p>
+      <p>USDC Balance: <span id="usdcBalance">0</span></p>
+    </div>
 
-<label>ERC20 Token Address (auto or custom):</label>
-<input type="text" id="tokenAddress" placeholder="0x...">
+    <div class="card">
+      <label>Select Token:</label>
+      <select id="tokenSelect" onchange="document.getElementById('tokenAddress').value = this.value">
+        <option value="">-- Select a Token --</option>
+        <option value="0xe0b22e0037b130a9f56bbb537684e6fa18192341">AAVE</option>
+        <option value="0x9a71012b13ca4d3d0cdc72a177df3ef03b0e76a3">BAL</option>
+        <option value="0x85955046df4668e1dd369d2de9f3aeb98dd2a369">BIFI</option>
+        <option value="0x9c9e5fD8bbc25984B178FdCE6117Defa39d2db39">BUSD</option>
+        <option value="0x5559EDb74751a0e293593F6D522B6993D96eF9Fa">CLAM</option>
+        <option value="0x172370d5cd63279efa6d502dab29171933a610af">CRV</option>
+        <option value="0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063">DAI</option>
+        <option value="0xcEd45a4d2Dcd9133dC183B58F7f4B0e1C839c752">GNS</option>
+        <option value="0x5979D7b546E38E414F7E9822514be443A4800529">LIDO</option>
+        <option value="0x1729b68f77f2d6f208d3958adfc7e2f001f3ed5c">SAND</option>
+        <option value="0xb33EaAd8d922B1083446DC23f610c2567fB5180f">UNI</option>
+        <option value="0x3066818837c5e6ed6601bd5a91b0762877a6b731">UMA</option>
+        <option value="0x7c9f4C87d911613Fe9ca58b579f737911AAD2D43">USDP</option>
+        <option value="0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6">WBTC</option>
+        <option value="0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619">WETH</option>
+        <option value="0xe7f58A92476056627f9Fdb92286778abaF6a4f6b">WOO</option>
+        <option value="0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270">WMATIC</option>
+      </select>
 
+      <label>Or enter custom ERC20 Token Address:</label>
+      <input type="text" id="tokenAddress" placeholder="0x...">
+
+      <label>Quantity in USDC:</label>
+      <input type="number" id="usdcAmount" placeholder="Amount to trade">
+
+      <label>Buy Router:</label>
+      <select id="buyRouter">
+        <option value="QuickSwap">QuickSwap</option>
+        <option value="SushiSwap">SushiSwap</option>
+        <option value="ApeSwap">ApeSwap</option>
+        <option value="Dfyn">Dfyn</option>
+        <option value="WaultSwap">WaultSwap</option>
+        <option value="Polycat">Polycat</option>
+        <option value="CafeSwap">CafeSwap</option>
+      </select>
+
+      <label>Sell Router:</label>
+      <select id="sellRouter">
+        <option value="QuickSwap">QuickSwap</option>
+        <option value="SushiSwap">SushiSwap</option>
+        <option value="ApeSwap">ApeSwap</option>
+        <option value="Dfyn">Dfyn</option>
+        <option value="WaultSwap">WaultSwap</option>
+        <option value="Polycat">Polycat</option>
+        <option value="CafeSwap">CafeSwap</option>
+      </select>
+
+      <label>
+        <input type="checkbox" id="profitOnlyToggle" checked> Trade only if profitable
+      </label><br>
+
+      <button onclick="startTrading()">Start</button>
+      <button onclick="stopTrading()">Stop</button>
+    </div>
+
+    <div class="card">
+      <h2>Live Arbitrage Opportunities</h2>
+      <table id="priceTable">
+        <thead>
+          <tr>
+            <th>Token</th>
+            <th>Buy DEX</th>
+            <th>Buy Price</th>
+            <th>Sell DEX</th>
+            <th>Sell Price</th>
+            <th>Profit (USDC)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Data rows will be inserted here dynamically -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    async function connectWallet() {
+      if (window.ethereum) {
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        await provider.send("eth_requestAccounts", []);
+        const signer = provider.getSigner();
+        const address = await signer.getAddress();
+        document.getElementById("walletAddress").innerText = address;
+        // Load USDC balance here if needed
+      } else {
+        alert("MetaMask not detected");
+      }
+    }
+
+    function startTrading() {
+      console.log("Trading started...");
+      // Trading logic goes here
+    }
+
+    function stopTrading() {
+      console.log("Trading stopped.");
+      // Stop trading logic
+    }
+  </script>
+</body>
+</html>
 
 
