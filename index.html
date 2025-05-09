@@ -1,115 +1,121 @@
-<!DOCTYPE html>  
-<html lang="en">  
-<head>  
-  <meta charset="UTF-8">  
-  <title>Polygon Arbitrage Bot</title>  
-  <script src="https://cdn.jsdelivr.net/npm/ethers@6.6.2/dist/ethers.umd.min.js"></script>  
-  <style>  
-    body { background-color: #0d1b2a; color: #ffffff; font-family: Arial, sans-serif; padding: 20px; }  
-    .card { background-color: #1b263b; border-radius: 10px; padding: 20px; margin-bottom: 20px; }  
-    input, select, button { margin: 5px 0; padding: 10px; border-radius: 5px; border: none; }  
-    button { background-color: #415a77; color: white; cursor: pointer; }  
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; }  
-    th, td { border: 1px solid #ffffff33; padding: 8px; text-align: center; }  
-    .green { color: #00ff99; }  
-    .red { color: #ff6666; }  
-  </style>  
-</head>  
-<body>  
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Polygon MetaMask DApp</title>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@6.6.2/dist/ethers.umd.min.js"></script>
+  <style>
+    body {
+      background-color: #0d1b2a;
+      color: #ffffff;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    .card {
+      background-color: #1b263b;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    input, select, button {
+      margin: 5px 0;
+      padding: 10px;
+      border-radius: 5px;
+      border: none;
+    }
+    button {
+      background-color: #415a77;
+      color: white;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
 
-  <h1>Polygon Arbitrage Bot</h1>  
+  <h1>Polygon Wallet DApp</h1>
 
-  <div class="card">  
-    <button onclick="connectWallet()">Connect MetaMask</button>  
-    <p><strong>Wallet:</strong> <span id="walletAddress">Not connected</span></p>  
-    <p><strong>USDC Balance:</strong> <span id="usdcBalance">0</span></p>  
-    <p><strong>Token Balance:</strong> <span id="tokenBalance">N/A</span></p>  
-  </div>  
+  <div class="card">
+    <button onclick="connectWallet()">Connect MetaMask</button>
+    <p><strong>Wallet:</strong> <span id="walletAddress">Not connected</span></p>
+    <p><strong>USDC Balance:</strong> <span id="usdcBalance">-</span></p>
+    <p><strong>Token Balance:</strong> <span id="tokenBalance">-</span></p>
+  </div>
 
-  <div class="card">  
-    <label>Select ERC20 Token:</label>  
-    <select id="tokenDropdown" onchange="document.getElementById('tokenAddress').value = this.value;">  
-      <option value="">-- Select a Token --</option>  
-      <option value="0xe0b22e0037b130a9f56bbb537684e6fa18192341">AAVE</option>  
-      <option value="0x9a71012b13ca4d3d0cdc72a177df3ef03b0e76a3">BAL</option>  
-      <option value="0x85955046df4668e1dd369d2de9f3aeb98dd2a369">BIFI</option>  
-      <option value="0x9c9e5fD8bbc25984B178FdCE6117Defa39d2db39">BUSD</option>  
-      <option value="0x5559EDb74751a0e293593F6D522B6993D96eF9Fa">CLAM</option>  
-      <option value="0x172370d5cd63279efa6d502dab29171933a610af">CRV</option>  
-      <option value="0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063">DAI</option>  
-      <option value="0xcEd45a4d2Dcd9133dC183B58F7f4B0e1C839c752">GNS</option>  
-      <option value="0x1729b68f77f2d6f208d3958adfc7e2f001f3ed5c">SAND</option>  
-      <option value="0x5979D7b546E38E414F7E9822514be443A4800529">LIDO</option>  
-      <option value="0x3066818837c5e6ed6601bd5a91b0762877a6b731">UMA</option>  
-      <option value="0xb33EaAd8d922B1083446DC23f610c2567fB5180f">UNI</option>  
-      <option value="0x7c9f4C87d911613Fe9ca58b579f737911AAD2D43">USDP</option>  
-      <option value="0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6">WBTC</option>  
-      <option value="0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270">WMATIC</option>  
-      <option value="0xe7f58A92476056627f9Fdb92286778abaF6a4f6b">WOO</option>  
-      <option value="0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619">WETH</option>  
-    </select>  
+  <div class="card">
+    <label>Select Token:</label>
+    <select id="tokenDropdown" onchange="document.getElementById('tokenAddress').value = this.value; updateTokenBalance();">
+      <option value="">-- Select a Token --</option>
+      <option value="0xe0b22e0037b130a9f56bbb537684e6fa18192341">AAVE</option>
+      <option value="0x9a71012b13ca4d3d0cdc72a177df3ef03b0e76a3">BAL</option>
+      <option value="0x85955046df4668e1dd369d2de9f3aeb98dd2a369">BIFI</option>
+      <option value="0x9c9e5fD8bbc25984B178FdCE6117Defa39d2db39">BUSD</option>
+      <option value="0x5559EDb74751a0e293593F6D522B6993D96eF9Fa">CLAM</option>
+      <option value="0x172370d5cd63279efa6d502dab29171933a610af">CRV</option>
+      <option value="0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063">DAI</option>
+      <option value="0xcEd45a4d2Dcd9133dC183B58F7f4B0e1C839c752">GNS</option>
+      <option value="0x5979D7b546E38E414F7E9822514be443A4800529">LIDO</option>
+      <option value="0x1729b68f77f2d6f208d3958adfc7e2f001f3ed5c">SAND</option>
+      <option value="0x3066818837c5e6ed6601bd5a91b0762877a6b731">UMA</option>
+      <option value="0xb33EaAd8d922B1083446DC23f610c2567fB5180f">UNI</option>
+      <option value="0x7c9f4C87d911613Fe9ca58b579f737911AAD2D43">USDP</option>
+      <option value="0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6">WBTC</option>
+      <option value="0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270">WMATIC</option>
+      <option value="0xe7f58A92476056627f9Fdb92286778abaF6a4f6b">WOO</option>
+      <option value="0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619">WETH</option>
+    </select>
 
-    <label>Or Enter Custom Token Address:</label>  
-    <input type="text" id="tokenAddress" placeholder="0x...">  
+    <label>Or enter custom token address:</label>
+    <input type="text" id="tokenAddress" placeholder="0x...">
+    <button onclick="updateTokenBalance()">Check Token Balance</button>
+  </div>
 
-    <label>Quantity in USDC:</label>  
-    <input type="number" id="usdcAmount" placeholder="Amount to trade">  
+  <script>
+    let provider, signer, userAddress;
 
-    <label>Buy Router:</label>  
-    <select id="buyRouter">  
-      <option value="QuickSwap">QuickSwap</option>  
-      <option value="SushiSwap">SushiSwap</option>  
-      <option value="ApeSwap">ApeSwap</option>  
-      <option value="Dfyn">Dfyn</option>  
-      <option value="WaultSwap">WaultSwap</option>  
-      <option value="Polycat">Polycat</option>  
-      <option value="CafeSwap">CafeSwap</option>  
-    </select>  
+    const usdcAddress = "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174"; // USDC on Polygon
+    const erc20Abi = [
+      "function balanceOf(address) view returns (uint)",
+      "function decimals() view returns (uint8)"
+    ];
 
-    <label>Sell Router:</label>  
-    <select id="sellRouter">  
-      <option value="QuickSwap">QuickSwap</option>  
-      <option value="SushiSwap">SushiSwap</option>  
-      <option value="ApeSwap">ApeSwap</option>  
-      <option value="Dfyn">Dfyn</option>  
-      <option value="WaultSwap">WaultSwap</option>  
-      <option value="Polycat">Polycat</option>  
-      <option value="CafeSwap">CafeSwap</option>  
-    </select>  
+    async function connectWallet() {
+      if (window.ethereum) {
+        provider = new ethers.BrowserProvider(window.ethereum);
+        await provider.send("eth_requestAccounts", []);
+        signer = await provider.getSigner();
+        userAddress = await signer.getAddress();
+        document.getElementById("walletAddress").innerText = userAddress;
+        getUSDCBalance();
+        updateTokenBalance();
+      } else {
+        alert("Please install MetaMask!");
+      }
+    }
 
-    <label>  
-      <input type="checkbox" id="profitOnlyToggle" checked> Trade only if profitable  
-    </label><br>  
+    async function getUSDCBalance() {
+      const usdc = new ethers.Contract(usdcAddress, erc20Abi, provider);
+      const balance = await usdc.balanceOf(userAddress);
+      const decimals = await usdc.decimals();
+      document.getElementById("usdcBalance").innerText = (balance / 10 ** decimals).toFixed(2);
+    }
 
-    <button onclick="startTrading()">Start</button>  
-    <button onclick="stopTrading()">Stop</button>  
-  </div>  
+    async function updateTokenBalance() {
+      const tokenAddress = document.getElementById("tokenAddress").value.trim();
+      if (!ethers.isAddress(tokenAddress)) {
+        document.getElementById("tokenBalance").innerText = "-";
+        return;
+      }
+      const token = new ethers.Contract(tokenAddress, erc20Abi, provider);
+      try {
+        const balance = await token.balanceOf(userAddress);
+        const decimals = await token.decimals();
+        document.getElementById("tokenBalance").innerText = (balance / 10 ** decimals).toFixed(4);
+      } catch (e) {
+        document.getElementById("tokenBalance").innerText = "Error";
+      }
+    }
+  </script>
 
-  <div class="card">  
-    <h3>Transaction Log</h3>  
-    <table>  
-      <thead>  
-        <tr>  
-          <th>#</th>  
-          <th>Token</th>  
-          <th>Buy Router</th>  
-          <th>Sell Router</th>  
-          <th>USDC In</th>  
-          <th>USDC Out</th>  
-          <th>Est. Profit/Loss</th>  
-          <th>Status</th>  
-        </tr>  
-      </thead>  
-      <tbody id="logBody">  
-        <!-- Results go here -->  
-      </tbody>  
-    </table>  
-  </div>  
-
-<script>
-// JavaScript code continues as-is (already present in your original paste)
-// If you need me to regenerate the full JavaScript part too, let me know.
-</script>
-
-</body>  
+</body>
 </html>
+
